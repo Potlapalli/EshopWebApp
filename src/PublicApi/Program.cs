@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using BlazorShared;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MinimalApi.Endpoint.Configurations.Extensions;
@@ -25,6 +27,9 @@ using MinimalApi.Endpoint.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddApplicationInsightsTelemetry();
+builder.Logging.AddApplicationInsights();
+builder.Logging.AddFilter<ApplicationInsightsLoggerProvider>("Test", LogLevel.Trace);
 builder.Services.AddEndpoints();
 
 // Use to force loading of appsettings.json of test project
@@ -146,6 +151,8 @@ using (var scope = app.Services.CreateScope())
         app.Logger.LogError(ex, "An error occurred seeding the DB.");
     }
 }
+
+
 
 if (app.Environment.IsDevelopment())
 {
